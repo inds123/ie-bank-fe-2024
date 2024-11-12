@@ -1,0 +1,29 @@
+# Use Node.js LTS Alpine image as base
+FROM node:lts-alpine
+
+# Set build argument for mode (e.g., development, production)
+ARG MODE
+
+# Install simple HTTP server for serving static content
+RUN npm install -g http-server
+
+# Set the working directory to /app
+WORKDIR /app
+
+# Copy package.json and package-lock.json if available
+COPY package*.json ./
+
+# Install project dependencies
+RUN npm install
+
+# Copy all project files and folders to the working directory (/app)
+COPY . .
+
+# Build the app with the specified mode
+RUN npm run build -- --mode ${MODE}
+
+# Expose port 8080 to allow external access
+EXPOSE 8080
+
+# Command to start the HTTP server and serve the "dist" directory
+CMD ["http-server", "dist"]
